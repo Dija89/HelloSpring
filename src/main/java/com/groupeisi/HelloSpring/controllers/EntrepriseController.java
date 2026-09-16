@@ -68,8 +68,10 @@ public class EntrepriseController {
                 raisonSociale
         );
 
-        return entrepriseService.update(entreprise);
-    }
+return entrepriseService.update(
+        raisonSociale,
+        entreprise
+);    }
 
     @DeleteMapping("/{raisonSociale}")
     public void delete(
