@@ -1,13 +1,11 @@
 package com.groupeisi.HelloSpring.init;
 
+import com.groupeisi.HelloSpring.entities.Entreprise;
 import com.groupeisi.HelloSpring.entities.Etudiant;
+import com.groupeisi.HelloSpring.repositories.EntrepriseRepository;
 import com.groupeisi.HelloSpring.repositories.EtudiantRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -17,12 +15,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class Demarrage implements CommandLineRunner {
 
-
     private final EtudiantRepository etudiantRepository;
+    private final EntrepriseRepository entrepriseRepository;
 
 
     // 100 prénoms africains : 80 sénégalais + 20 autres africains
     private String[] prenomsAfricains = {
+
             // 80 prénoms sénégalais
             "Amadou", "Mamadou", "Ibrahima", "Ousmane", "Cheikh",
             "Abdoulaye", "Modou", "Babacar", "Pape", "Serigne",
@@ -49,8 +48,10 @@ public class Demarrage implements CommandLineRunner {
             "Nomsa", "Tendai", "Tariro", "Chipo", "Mpho"
     };
 
+
     // 50 noms de famille africains : 40 sénégalais + 10 autres africains
-    String[] nomsFamilleAfricains = {
+    private String[] nomsFamilleAfricains = {
+
             // 40 noms de famille sénégalais
             "Diop", "Ndiaye", "Fall", "Sow", "Ba",
             "Diallo", "Gueye", "Faye", "Sarr", "Sy",
@@ -67,41 +68,208 @@ public class Demarrage implements CommandLineRunner {
     };
 
 
-
     @Override
     public void run(String... args) throws Exception {
-        log.info("Demarrage"); //trace/debug/info/warn/error
+
+        log.info("Demarrage");
+
+
+        /*
+         * ============================================
+         * INITIALISATION DES ETUDIANTS
+         * ============================================
+         */
+
         long nbEtudiants = etudiantRepository.count();
-        log.info("il existe {} étudiant(s) en base", nbEtudiants);
+
+        log.info(
+                "Il existe {} étudiant(s) en base",
+                nbEtudiants
+        );
 
         if (nbEtudiants == 0) {
-            log.warn("aucun etudfiant en base, initialisation des etudiants");
-            int nbNEwEtudiant = (int)(Math.random()*20)+400;
-            log.warn("{} seront crees", nbNEwEtudiant);
-            for (int i=0; i<nbNEwEtudiant; i++) {
-                int idxPrenom = (int)(Math.random()*prenomsAfricains.length);
-                log.trace("indice prenom {}", idxPrenom);
-                String prenom = prenomsAfricains[idxPrenom];
-                log.trace("prenom {}", prenom);
 
-                int idxNom = (int)(Math.random()*nomsFamilleAfricains.length);
-                log.trace("indice nom {}", idxNom);
-                String nom = nomsFamilleAfricains[idxNom];
-                log.trace("nom {}", nom);
+            log.warn(
+                    "Aucun étudiant en base, initialisation des étudiants"
+            );
 
-                Etudiant etudiant= new Etudiant();
+            int nbNewEtudiant =
+                    (int) (Math.random() * 20) + 400;
+
+            log.warn(
+                    "{} étudiants seront créés",
+                    nbNewEtudiant
+            );
+
+            for (int i = 0; i < nbNewEtudiant; i++) {
+
+                int idxPrenom =
+                        (int) (Math.random() * prenomsAfricains.length);
+
+                String prenom =
+                        prenomsAfricains[idxPrenom];
+
+
+                int idxNom =
+                        (int) (Math.random() * nomsFamilleAfricains.length);
+
+                String nom =
+                        nomsFamilleAfricains[idxNom];
+
+
+                Etudiant etudiant = new Etudiant();
+
                 etudiant.setNom(nom);
                 etudiant.setPrenom(prenom);
-                etudiant.setEmail(prenom.charAt(0)+nom+i+"@groupeisi.com");
-                etudiant.setNumCarte("2026GL"+(i+1));
+
+                etudiant.setEmail(
+                        prenom.charAt(0)
+                                + nom
+                                + i
+                                + "@groupeisi.com"
+                );
+
+                etudiant.setNumCarte(
+                        "2026GL" + (i + 1)
+                );
+
                 etudiantRepository.save(etudiant);
             }
 
-        }else{
-            log.info("il ya desja des données en base (pas d'initialisation a faire)");
+        } else {
+
+            log.info(
+                    "Il y a déjà des étudiants en base, aucune initialisation"
+            );
         }
 
 
+        /*
+         * ============================================
+         * INITIALISATION DES ENTREPRISES
+         * ============================================
+         */
 
+        long nbEntreprises = entrepriseRepository.count();
+
+        log.info(
+                "Il existe {} entreprise(s) en base",
+                nbEntreprises
+        );
+
+
+        if (nbEntreprises == 0) {
+
+            log.warn(
+                    "Aucune entreprise en base, initialisation de 5 entreprises"
+            );
+
+
+            // Entreprise 1 : UNIVAL
+            Entreprise entreprise1 = new Entreprise();
+
+            entreprise1.setRaisonSociale("UNIVAL");
+            entreprise1.setSecteurActivite(
+                    "Communication"
+            );
+            entreprise1.setAdresse("Dakar");
+            entreprise1.setEmail(
+                    "unival@unival.sn"
+            );
+            entreprise1.setTelephone(
+                    "338000001"
+            );
+
+            entrepriseRepository.save(entreprise1);
+
+
+            // Entreprise 2 : SENAGRI
+            Entreprise entreprise2 = new Entreprise();
+
+            entreprise2.setRaisonSociale("SENAGRI");
+            entreprise2.setSecteurActivite(
+                    "Agriculture"
+            );
+            entreprise2.setAdresse("Dakar");
+            entreprise2.setEmail(
+                    "senagri@senagri.sn"
+            );
+            entreprise2.setTelephone(
+                    "338000020"
+            );
+
+            entrepriseRepository.save(entreprise2);
+
+
+            // Entreprise 3 : TERANGA TECH
+            Entreprise entreprise3 = new Entreprise();
+
+            entreprise3.setRaisonSociale(
+                    "TERANGA TECH"
+            );
+            entreprise3.setSecteurActivite(
+                    "Informatique"
+            );
+            entreprise3.setAdresse("Dakar");
+            entreprise3.setEmail(
+                    "teranga@terangatech.sn"
+            );
+            entreprise3.setTelephone(
+                    "338420003"
+            );
+
+            entrepriseRepository.save(entreprise3);
+
+
+            // Entreprise 4 : DAKAR LOGISTICS
+            Entreprise entreprise4 = new Entreprise();
+
+            entreprise4.setRaisonSociale(
+                    "DAKAR LOGISTICS"
+            );
+            entreprise4.setSecteurActivite(
+                    "Transport et logistique"
+            );
+            entreprise4.setAdresse("Dakar");
+            entreprise4.setEmail(
+                    "logistique@dakarlogistics.sn"
+            );
+            entreprise4.setTelephone(
+                    "338004040"
+            );
+
+            entrepriseRepository.save(entreprise4);
+
+
+            // Entreprise 5 : AFRICA DIGITAL
+            Entreprise entreprise5 = new Entreprise();
+
+            entreprise5.setRaisonSociale(
+                    "AFRICA DIGITAL"
+            );
+            entreprise5.setSecteurActivite(
+                    "Services numériques"
+            );
+            entreprise5.setAdresse("Dakar");
+            entreprise5.setEmail(
+                    "contact@africadigital.sn"
+            );
+            entreprise5.setTelephone(
+                    "338220505"
+            );
+
+            entrepriseRepository.save(entreprise5);
+
+
+            log.info(
+                    "Les 5 entreprises ont été créées avec succès"
+            );
+
+        } else {
+
+            log.info(
+                    "Il y a déjà des entreprises en base, aucune initialisation"
+            );
+        }
     }
 }
