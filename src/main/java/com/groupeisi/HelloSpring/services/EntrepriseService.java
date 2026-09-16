@@ -14,24 +14,64 @@ public class EntrepriseService {
 
     private final EntrepriseRepository entrepriseRepository;
 
+
+    // Lister toutes les entreprises
     public List<Entreprise> findAll() {
         return entrepriseRepository.findAll();
     }
 
+
+    // Rechercher une entreprise par sa raison sociale
     public Optional<Entreprise> findByRaisonSociale(String raisonSociale) {
         return entrepriseRepository.findById(raisonSociale);
     }
 
+
+    // Créer une nouvelle entreprise
     public Entreprise create(Entreprise entreprise) {
-        entreprise = entrepriseRepository.save(entreprise);
-        return entreprise;
+        return entrepriseRepository.save(entreprise);
     }
 
-    public Entreprise update(Entreprise entreprise) {
-        entreprise = entrepriseRepository.save(entreprise);
-        return entreprise;
+
+    // Modifier une entreprise existante
+    public Entreprise update(
+            String raisonSociale,
+            Entreprise entreprise) {
+
+        Optional<Entreprise> entrepriseBd =
+                entrepriseRepository.findById(raisonSociale);
+
+        if (entrepriseBd.isPresent()) {
+
+            Entreprise entrepriseExistante =
+                    entrepriseBd.get();
+
+            entrepriseExistante.setSecteurActivite(
+                    entreprise.getSecteurActivite()
+            );
+
+            entrepriseExistante.setAdresse(
+                    entreprise.getAdresse()
+            );
+
+            entrepriseExistante.setEmail(
+                    entreprise.getEmail()
+            );
+
+            entrepriseExistante.setTelephone(
+                    entreprise.getTelephone()
+            );
+
+            return entrepriseRepository.save(
+                    entrepriseExistante
+            );
+        }
+
+        return null;
     }
 
+
+    // Supprimer une entreprise
     public void delete(String raisonSociale) {
         entrepriseRepository.deleteById(raisonSociale);
     }
