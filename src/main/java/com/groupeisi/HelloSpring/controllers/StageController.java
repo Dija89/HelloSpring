@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Slf4j
@@ -54,14 +53,7 @@ public class StageController {
                 id
         );
 
-        Optional<Stage> stage =
-                stageService.findById(id);
-
-        if (stage.isPresent()) {
-            return stage.get();
-        }
-
-        return null;
+        return stageService.findById(id);
     }
 
 
