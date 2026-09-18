@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,21 +26,18 @@ public class EntrepriseController {
         return entrepriseService.findAll();
     }
 
-    @GetMapping("/{raisonSociale}")
-    public Entreprise getEntreprise(
-            @PathVariable String raisonSociale) {
+   @GetMapping("/{raisonSociale}")
+public Entreprise getEntreprise(
+        @PathVariable String raisonSociale) {
 
-        log.info(
-                "Recherche entreprise : {}",
-                raisonSociale
-        );
+    log.info(
+            "Recherche entreprise : {}",
+            raisonSociale
+    );
 
-        Optional<Entreprise> entrepriseBd =
-                entrepriseService.findByRaisonSociale(raisonSociale);
-
-        if (entrepriseBd.isPresent()) {
-            return entrepriseBd.get();
-        }
+    return entrepriseService
+            .findByRaisonSociale(raisonSociale);
+}
 
         return null;
     }
