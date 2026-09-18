@@ -1,12 +1,12 @@
 package com.groupeisi.HelloSpring.services;
 
 import com.groupeisi.HelloSpring.entities.Entreprise;
+import com.groupeisi.HelloSpring.exceptions.EntrepriseNotFoundException;
 import com.groupeisi.HelloSpring.repositories.EntrepriseRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -22,57 +22,74 @@ public class EntrepriseService {
 
 
     // Rechercher une entreprise par sa raison sociale
-    public Optional<Entreprise> findByRaisonSociale(String raisonSociale) {
-        return entrepriseRepository.findById(raisonSociale);
+    public Entreprise findByRaisonSociale(String raisonSociale) {
+
+        return entrepriseRepository
+                .findById(raisonSociale)
+                .orElseThrow(
+                        () -> new EntrepriseNotFoundException(
+                                raisonSociale
+                        )
+                );
     }
 
 
-    // Créer une nouvelle entreprise
+    // Créer une entreprise
     public Entreprise create(Entreprise entreprise) {
         return entrepriseRepository.save(entreprise);
     }
 
 
-    // Modifier une entreprise existante
+    // Modifier une entreprise
     public Entreprise update(
             String raisonSociale,
             Entreprise entreprise) {
 
-        Optional<Entreprise> entrepriseBd =
-                entrepriseRepository.findById(raisonSociale);
+        Entreprise entrepriseExistante =
+                entrepriseRepository
+                        .findById(raisonSociale)
+                        .orElseThrow(
+                                () -> new EntrepriseNotFoundException(
+                                        raisonSociale
+                                )
+                        );
 
-        if (entrepriseBd.isPresent()) {
 
-            Entreprise entrepriseExistante =
-                    entrepriseBd.get();
+        entrepriseExistante.setSecteurActivite(
+                entreprise.getSecteurActivite()
+        );
 
-            entrepriseExistante.setSecteurActivite(
-                    entreprise.getSecteurActivite()
-            );
+        entrepriseExistante.setAdresse(
+                entreprise.getAdresse()
+        );
 
-            entrepriseExistante.setAdresse(
-                    entreprise.getAdresse()
-            );
+        entrepriseExistante.setEmail(
+                entreprise.getEmail()
+        );
 
-            entrepriseExistante.setEmail(
-                    entreprise.getEmail()
-            );
+        entrepriseExistante.setTelephone(
+                entreprise.getTelephone()
+        );
 
-            entrepriseExistante.setTelephone(
-                    entreprise.getTelephone()
-            );
 
-            return entrepriseRepository.save(
-                    entrepriseExistante
-            );
-        }
-
-        return null;
+        return entrepriseRepository.save(
+                entrepriseExistante
+        );
     }
 
 
     // Supprimer une entreprise
     public void delete(String raisonSociale) {
-        entrepriseRepository.deleteById(raisonSociale);
+
+        Entreprise entreprise =
+                entrepriseRepository
+                        .findById(raisonSociale)
+                        .orElseThrow(
+                                () -> new EntrepriseNotFoundException(
+                                        raisonSociale
+                                )
+                        );
+
+        entrepriseRepository.delete(entreprise);
     }
 }
